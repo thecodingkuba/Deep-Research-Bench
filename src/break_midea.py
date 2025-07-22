@@ -63,7 +63,7 @@ logger = logging.getLogger(__name__)
 text_request_template = {
     "request_id": f"test_{uuid.uuid4().hex}",
     "assistant_id": "xm_deep_search",
-    "content": "打开客厅风扇宝宝风",
+    "content": "ask something!",
     "metadata": {},
     "context": {}
 }
@@ -117,7 +117,7 @@ if __name__ == "__main__":
         "--request_text",
         help="request_text",
         # default="回顾一下李白的一生，并给出相应的评价",
-        default="在中国广东最近两个月通过什么方式购买空调能拿到最低的价格，请打开思路帮我想想最省钱又最可行的组合操作方式",
+        default="what is one plus one",
         # default="中国家电行业未来发展趋势",
     )
     parser.add_argument(

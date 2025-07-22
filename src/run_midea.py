@@ -1,0 +1,149 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 _*-
+# @Time    : 2025-06-16
+# @Author  : lc
+# @File    : test_client_run.py
+import argparse
+import datetime
+import json
+import logging
+import uuid
+from json import JSONDecodeError
+
+import httpx
+
+
+def httpx_callback(url, method, timeout=300, **kwargs):
+    timeout = httpx.Timeout(timeout or 300)
+    try:
+        with httpx.Client(timeout=timeout) as client:
+            resp = client.request(method, url, **kwargs)
+            resp.raise_for_status()
+            try:
+                return resp.json()
+            except JSONDecodeError:
+                return resp.text
+    except Exception as e:
+        raise e
+
+
+async def ahttpx_callback(url, method, timeout=300, **kwargs):
+    # print(f"并行调用开始{datetime.now().isoformat()}")
+    timeout = httpx.Timeout(timeout or 300)
+    try:
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            resp = await client.request(method, url, **kwargs)
+            resp.raise_for_status()
+            try:
+                return resp.json()
+            except JSONDecodeError:
+                return resp.text()
+    except Exception as e:
+        raise e
+
+
+def httpx_stream(url, method, timeout=300, **kwargs):
+    timeout = httpx.Timeout(timeout or 300)
+    try:
+        with httpx.Client(timeout=timeout) as client:
+            with client.stream(method, url, **kwargs) as resp:
+                resp.raise_for_status()
+                for line in resp.iter_lines():
+                    if not line:
+                        continue
+                    yield line
+    except Exception as e:
+        raise e
+
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
+logger = logging.getLogger(__name__)
+
+text_request_template = {
+    "request_id": f"test_{uuid.uuid4().hex}",
+    "assistant_id": "xm_deep_search",
+    "content": "打开客厅风扇宝宝风",
+    "metadata": {},
+    "context": {}
+}
+
+
+def call_server_run_stream(base_url, thread_id, data, auth=None):
+    # api = urllib.parse.urljoin(base_url, "/llm/llmkbqa/rest_complete/stream")\
+    headers = {"Content-Type": "application/json"}
+    if auth:
+        headers["Authorization"] = f"Bearer {auth}"
+    # health_api = base_url.rstrip("/") + f"/health"
+    # print(f"call {health_api}")
+    # print(httpx_callback(health_api, "get", headers=headers))
+    api = base_url.rstrip("/") + f"/v1/threads/{thread_id}/runs_stream"
+    print(f"call {api} with json {data} headers {headers}")
+    for delta in httpx_stream(api, "post", json=data, headers=headers, timeout=6000):
+        print(delta)
+
+
+def call_server_run_callback(base_url, thread_id, data, auth=None):
+    headers = {"Content-Type": "application/json"}
+    if auth:
+        headers["Authorization"] = f"Bearer {auth}"
+    api = base_url.rstrip("/") + f"/v1/threads/{thread_id}/runs"
+    print(f"call {api} with json {data} headers {headers}")
+    
+    # Use the httpx_callback function to make the request
+    response = httpx_callback(api, "post", json=data, headers=headers, timeout=6000)
+    print(response)  # Print the full response
+
+
+def test_client(base_url, assistant_id, request_text, mip, auth=None):
+    data = text_request_template.copy()
+    data["assistant_id"] = assistant_id
+    data["content"] = request_text
+    data["metadata"]["mip"] = mip
+    thread_id = "69e67268526811f08f9d24eb1607fe62"
+    # thread_id = uuid.uuid1().hex
+
+    # Call the callback-based function
+    call_server_run_callback(base_url, thread_id, data, auth=auth)
+
+
+def test_online(base_url, request_json, auth=None):
+    thread_id = datetime.date.today().isoformat()
+    # Call the callback-based function
+    call_server_run_callback(base_url, thread_id, request_json, auth=auth)
+
+
+if __name__ == "__main__":
+    import os
+    import sys
+
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    parser = argparse.ArgumentParser(description="Run the Client")
+    parser.add_argument(
+        "--assistant_id",
+        default="xm_deep_search",
+    )
+    parser.add_argument(
+        "--mip",
+        default="liuchen21",
+    )
+    parser.add_argument(
+        "--request_text",
+        help="request_text",
+        default="what is one plus one?",
+    )
+    parser.add_argument(
+        "--request_json",
+        help="request_json",
+        default=None,
+    )
+
+    args = parser.parse_args()
+
+    base_url = "https://aimpapi.midea.com/t-aigc/airc-deepresearch-sit/"
+    auth = "msk-d60011d8a6905bd6b8d72cb77f847d978e387c253266a1dc5beb1c60f8fddf9b"
+
+    if args.request_json:
+        test_online(base_url, request_json=json.loads(args.request_json), auth=auth)
+    else:
+        test_client(base_url, assistant_id=args.assistant_id, request_text=args.request_text, mip=args.mip, auth=auth)
