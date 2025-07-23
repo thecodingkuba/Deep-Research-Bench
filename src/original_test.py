@@ -9,7 +9,6 @@ import json
 import logging
 import uuid
 from json import JSONDecodeError
-
 import httpx
 
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Target model name list
-TARGET_MODELS=("claude-3-7-sonnet-latest")
+TARGET_MODELS=("midea")
 
 # Common parameters for both RACE and Citation evaluations
 RAW_DATA_DIR="data/test_data/raw_data"
