@@ -95,8 +95,13 @@ def main():
     # Create dataframe of all queries
     input_queries_df = pd.read_json("data/prompt_data/query.jsonl", lines=True)
     output_scores_df = pd.read_json("results/race/midea/raw_results.jsonl", lines=True)
+    # check consistency of prompts matching
+    # assert len(output_scores_df) == len(input_queries_df), "Mismatch in number of queries and results"
+    for i in range(len(input_queries_df)):
+        assert output_scores_df.iloc[i]["prompt"] == input_queries_df.iloc[i]["prompt"], f"Prompt mismatch at id {i + 1}"
     output_scores_df = output_scores_df.drop(columns=["id", "prompt"])
     result_df = pd.concat([input_queries_df, output_scores_df], axis=1)
+ 
     # print the columns for DEBUGGING
     # print("Available columns:", result_df.columns.tolist())
    
