@@ -10,15 +10,51 @@ pd.set_option('display.width', 1000)
 
 def print_best_results(dataframe, count=3):
     """
-    Print the best results from the dataframe.
+    Print the best results from the dataframe with better formatting.
     """
-    print(dataframe.sort_values('overall_score').head(3)[['query', 'overall_score']])
+    best_results = dataframe.sort_values('overall_score', ascending=False).head(count)
+    
+    print("\n" + "=" * 80)
+    print(f"BEST {count} RESULTS")
+    print("=" * 80)
+    
+    for i, (_, row) in enumerate(best_results.iterrows(), 1):
+        print(f"\nRESULT #{i} ID.{row['id']} :")
+        print(f"  Score: {row['overall_score']:.4f}")
+        print(f"  Prompt: ")
+        # Indent the prompt text and wrap long lines   
+        prompt_lines = row['prompt'].split('\n')
+        for line in prompt_lines:
+            # Wrap long lines at 70 characters
+            for j in range(0, len(line), 70):
+                print(f"    {line[j:j+70]}")
+        print("-" * 80)
+    
+    return best_results
 
 def print_worst_results(dataframe, count=3):
     """
-    Print the worst results from the dataframe.
+    Print the worst results from the dataframe with better formatting.
     """
-    print(dataframe.sort_values('overall_score', ascending=False).head(3)[['query', 'overall_score']])
+    worst_results = dataframe.sort_values('overall_score', ascending=True).head(count)
+    
+    print("\n" + "=" * 80)
+    print(f"WORST {count} RESULTS")
+    print("=" * 80)
+    
+    for i, (_, row) in enumerate(worst_results.iterrows(), 1):
+        print(f"\nRESULT #{i} ID.{row['id']} :")
+        print(f"  Score: {row['overall_score']:.4f}")
+        print(f"  Prompt: ")
+        # Indent the prompt text and wrap long lines
+        prompt_lines = row['prompt'].split('\n')
+        for line in prompt_lines:
+            # Wrap long lines at 70 characters
+            for j in range(0, len(line), 70):
+                print(f"    {line[j:j+70]}")
+        print("-" * 80)
+    
+    return worst_results
 
 def analyze_scores(dataframe, title, color='blue', filename=None):
     """    
@@ -61,27 +97,40 @@ def main():
     output_scores_df = pd.read_json("results/race/midea/raw_results.jsonl", lines=True)
     output_scores_df = output_scores_df.drop(columns=["id", "prompt"])
     result_df = pd.concat([input_queries_df, output_scores_df], axis=1)
-    # print the columns for debugging
-    print("Available columns:", result_df.columns.tolist())
+    # print the columns for DEBUGGING
+    # print("Available columns:", result_df.columns.tolist())
    
-    # Create language-specific subset dataframes
+    # Create "language" specific subset dataframes
     english_df = result_df[result_df["language"] == "en"]
-    english_df = english_df.drop(columns=["language"])
     chinese_df = result_df[result_df["language"] == "zh"]
-    chinese_df = chinese_df.drop(columns=["language"])    
-    # Create topic specific dataframes
-    
+    # Create "topic" specific dataframes
+    science_df = result_df[result_df["topic"] == "Science & Technology"]
+    finance_df = result_df[result_df["topic"] == "Finance & Business"]
+    software_df = result_df[result_df["topic"] == "Software Development"]
+    health_df = result_df[result_df["topic"] == "Health"]
+    # Dictionary to navigate dataframes
+    topic_dfs = {
+        "ALL": (result_df, "ALL SCORES", "blue", "all_scores_distribution.png"),
+        "ENG": (english_df, "ENGLISH SCORES", "green", "english_scores_distribution.png"),
+        "CHI": (chinese_df, "CHINESE SCORES", "red", "chinese_scores_distribution.png"),
+        "SCI": (science_df, "SCIENCE SCORES", "purple", "science_scores_distribution.png"),
+        "FIN": (finance_df, "FINANCE SCORES", "orange", "finance_scores_distribution.png"),
+        "SOFT": (software_df, "SOFTWARE SCORES", "cyan", "software_scores_distribution.png"),
+        "HEALTH": (health_df, "HEALTH SCORES", "magenta", "health_scores_distribution.png"),
+    }
+    # CHANGE THIS TO CHANGE WHAT IS BEING ANALYZED
+    key = topic_dfs["ALL"]
 
+    # for topic in topic_dfs:
+    #     analyze_scores(topic_dfs[topic][0], topic_dfs[topic][1], color=topic_dfs[topic][2], filename=topic_dfs[topic][3])
 
-
-    # Run your existing analysis
-    # analyze_scores(result_df, "ENGLISH", color='blue', filename='all_scores_distribution.png')
-    # print_best_results(result_df, count=5)   
-    # print_worst_results(result_df, count=5)  
+ 
+    # analyze_scores(key[0], key[1], color=key[2], filename=key[3])
+    # print_best_results(key[0], count=4)   
+    # print_worst_results(key[0], count=4)  
 
 if __name__ == "__main__":
     main()
-
 
 
 
