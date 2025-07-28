@@ -92,7 +92,7 @@ def call_midea_api(query_text, thread_id=None):
     
 def main():
     # file input query
-    target_id = 41
+    target_id = 74
     prompt = ""
     if target_id > 0:
         with open("data/prompt_data/query.jsonl", "r", encoding="utf-8") as f:
