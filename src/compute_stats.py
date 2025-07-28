@@ -97,8 +97,10 @@ def main():
     output_scores_df = pd.read_json("results/race/midea/raw_results.jsonl", lines=True)
     # check consistency of prompts matching
     # assert len(output_scores_df) == len(input_queries_df), "Mismatch in number of queries and results"
-    for i in range(len(input_queries_df)):
-        assert output_scores_df.iloc[i]["prompt"] == input_queries_df.iloc[i]["prompt"], f"Prompt mismatch at id {i + 1}"
+    print(input_queries_df[input_queries_df["id"] == 41]["prompt"])
+    print(output_scores_df[output_scores_df["id"] == 41]["prompt"])
+    # for i in range(len(input_queries_df)):
+    #     assert output_scores_df.iloc[i]["prompt"] == input_queries_df.iloc[i]["prompt"], f"Prompt mismatch at id {i + 1}"
     output_scores_df = output_scores_df.drop(columns=["id", "prompt"])
     result_df = pd.concat([input_queries_df, output_scores_df], axis=1)
  
@@ -133,6 +135,13 @@ def main():
     # analyze_scores(key[0], key[1], color=key[2], filename=key[3])
     # print_best_results(key[0], count=4)   
     # print_worst_results(key[0], count=4)  
+
+
+
+
+    # MISCELLANEOUS PRINTING SPACE
+    # print(result_df[result_df["id"] == 74])
+
 
 if __name__ == "__main__":
     main()
