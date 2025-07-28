@@ -11,36 +11,6 @@ import uuid
 from json import JSONDecodeError
 import httpx
 
-
-def httpx_callback(url, method, timeout=300, **kwargs):
-    timeout = httpx.Timeout(timeout or 300)
-    try:
-        with httpx.Client(timeout=timeout) as client:
-            resp = client.request(method, url, **kwargs)
-            resp.raise_for_status()
-            try:
-                return resp.json()
-            except JSONDecodeError:
-                return resp.text
-    except Exception as e:
-        raise e
-
-
-async def ahttpx_callback(url, method, timeout=300, **kwargs):
-    # print(f"并行调用开始{datetime.now().isoformat()}")
-    timeout = httpx.Timeout(timeout or 300)
-    try:
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            resp = await client.request(method, url, **kwargs)
-            resp.raise_for_status()
-            try:
-                return resp.json()
-            except JSONDecodeError:
-                return resp.text()
-    except Exception as e:
-        raise e
-
-
 def httpx_stream(url, method, timeout=300, **kwargs):
     timeout = httpx.Timeout(timeout or 300)
     try:
@@ -54,10 +24,6 @@ def httpx_stream(url, method, timeout=300, **kwargs):
     except Exception as e:
         raise e
 
-
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
-logger = logging.getLogger(__name__)
 
 text_request_template = {
     "request_id": f"test_{uuid.uuid4().hex}",
