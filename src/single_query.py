@@ -18,8 +18,7 @@ ASSISTANT_ID = "xm_deep_search"
 MIP = "liuchen21"
 
 # File paths
-QUERY_FILE = "../data/prompt_data/query.jsonl"
-OUTPUT_FILE = "../data/test_data/raw_data/midea.jsonl"
+OUTPUT_FILE = "data/test_data/raw_data/midea_dump.jsonl"
 
 text_request_template = {
     "request_id": f"test_{uuid.uuid4().hex}",
@@ -28,6 +27,12 @@ text_request_template = {
     "metadata": {},
     "context": {}
 }
+
+def save_result(result, output_file):
+    """Append result to output file"""
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    with open(output_file, 'a', encoding='utf-8') as f:
+        f.write(json.dumps(result, ensure_ascii=False) + '\n')
 
 def call_midea_api(query_text, thread_id=None):
     """Call Midea API with the working configuration"""
@@ -86,7 +91,22 @@ def call_midea_api(query_text, thread_id=None):
         return None
     
 def main():
-    print(call_midea_api("Who wins in a fight, blackbeard or luffy?"))
+    # file input query
+    target_id = 41
+    prompt = ""
+    if target_id > 0:
+        with open("data/prompt_data/query.jsonl", "r", encoding="utf-8") as f:
+            queries = f.readlines()
+            query_object = json.loads(queries[target_id - 1])
+            prompt = query_object["prompt"]
+    # manually input query if invalid id
+    if target_id < 0:
+        prompt = "meow like a dog who is a chimpanzee"
+
+    print(f"Query: {prompt}")
+    result = call_midea_api(prompt)
+    print(result)
+    save_result(result, OUTPUT_FILE)
 
 if __name__ == "__main__":
     main()

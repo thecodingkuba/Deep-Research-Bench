@@ -76,7 +76,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--request_text",
         help="request_text",
-        default="收集整理目前中国电影票房前十的电影的相关资料，横向比较各电影的主题、技制作公司、题材、时长等维度，并为我评估出最有可能在未来实现高票房的电影类型",
+        default="As an agricultural engineering researcher focusing on 3D reconstruction and phenotypic analysis of crop grains, please develop a design report utilizing modern control theory, alongside other relevant theoretical methods and models, for the tasks of modeling, analysis, and design pertinent to my research area.",
     )
     parser.add_argument(
         "--request_json",
