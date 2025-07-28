@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 _*-
-# Run a single query using the Midea API and display the result
+# Batch process all queries from query.jsonl using the working Midea API
 import json
 import time
 import uuid
 from pathlib import Path
 import httpx
 from datetime import datetime
-
-# Add current directory to path for imports
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -18,6 +16,10 @@ BASE_URL = "https://aimpapi.midea.com/t-aigc/airc-deepresearch-sit/"
 AUTH_TOKEN = "msk-d60011d8a6905bd6b8d72cb77f847d978e387c253266a1dc5beb1c60f8fddf9b"
 ASSISTANT_ID = "xm_deep_search"
 MIP = "liuchen21"
+
+# File paths
+QUERY_FILE = "../data/prompt_data/query.jsonl"
+OUTPUT_FILE = "../data/test_data/raw_data/midea.jsonl"
 
 text_request_template = {
     "request_id": f"test_{uuid.uuid4().hex}",
@@ -82,36 +84,9 @@ def call_midea_api(query_text, thread_id=None):
     except Exception as e:
         print(f"Error calling API: {e}")
         return None
-
-def run_single_query(query_text):
-    """Run a single query and display the result in the terminal"""
-    print(f"\n🚀 Running query: {query_text}")
-    print(f"{'='*60}")
     
-    # Call API
-    start_time = time.time()
-    response = call_midea_api(query_text)
-    end_time = time.time()
-    
-    # Display results
-    if response:
-        print(f"\n✅ SUCCESS - Got response in {round(end_time - start_time, 2)}s")
-        print(f"Response length: {len(response)} characters")
-        print(f"\n{'='*60}")
-        print("RESPONSE:")
-        print(f"{'='*60}")
-        print(response)
-        print(f"{'='*60}")
-    else:
-        print(f"\n❌ FAILED - No response received")
-    
-    return response
+def main():
+    print(call_midea_api("Who wins in a fight, blackbeard or luffy?"))
 
 if __name__ == "__main__":
-    # Get input from the user
-    query_text = input("Enter your query: ").strip()
-    
-    if query_text:
-        run_single_query(query_text)
-    else:
-        print("No query provided. Exiting.")
+    main()
