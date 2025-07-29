@@ -33,7 +33,7 @@ def print_best_results(dataframe, count=3):
     
     return best_results
 
-def find_length_bias(dataframe, PearsonFilename = None, SpearmanFilename = None):
+def find_length_bias(dataframe):
     """
     Analyze the length bias in the dataframe.
     """
@@ -50,17 +50,14 @@ def find_length_bias(dataframe, PearsonFilename = None, SpearmanFilename = None)
     plt.xlabel('Word Count')
     plt.ylabel('Score')
     plt.show()
-    if PearsonFilename:
-        plt.savefig(PearsonFilename, dpi=300, bbox_inches='tight', format='png', transparent=True)
 
-    # Create a scatterplot for Spearman with regression line
+     # Create a scatterplot for Spearman with regression line
     sns.lmplot(data=dataframe, x='output_length', y='overall_score', ci=None)
     plt.title('Output Length vs. Score (Spearman Correlation)')
     plt.xlabel('Word Count')
     plt.ylabel('Score')
     plt.show()
-    if SpearmanFilename:
-        plt.savefig(SpearmanFilename, dpi=300, bbox_inches='tight', format='png', transparent=True)
+  
 
 def print_worst_results(dataframe, count=3):
     """
@@ -168,14 +165,14 @@ def main():
 
     # *********WORST/BEST CASES**********
     # print_best_results(key[0], count=4)   
-    # print_worst_results(key[0], count=4)  
+    print_worst_results(key[0], count = 4)  
 
     # *****MISCELLANEOUS PRINTING SPACE******
     # print(result_df[result_df["id"] == 74])
 
     # Find length bias
-    find_length_bias(key[0])
-    print("DONE")
+    # find_length_bias(key[0])
+    # print("DONE")
 
 
 if __name__ == "__main__":
