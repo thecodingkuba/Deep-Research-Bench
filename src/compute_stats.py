@@ -1,12 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.stats import pearsonr, spearmanr
+import seaborn as sns
 import json
 import os
 
 # Set pandas display options to show full text
 pd.set_option('display.max_colwidth', None)  
 pd.set_option('display.width', 1000)        
-
 
 def print_best_results(dataframe, count=3):
     """
@@ -31,6 +32,35 @@ def print_best_results(dataframe, count=3):
         print("-" * 80)
     
     return best_results
+
+def find_length_bias(dataframe, PearsonFilename = None, SpearmanFilename = None):
+    """
+    Analyze the length bias in the dataframe.
+    """
+    pearson_corr, pearson_p = pearsonr(dataframe["output_length"], dataframe['overall_score'])  
+    spearman_corr, spearman_p = spearmanr(dataframe["output_length"], dataframe['overall_score'])
+
+    print("\nLength Bias Analysis:")
+    print(f"Pearson Correlation: {pearson_corr:.4f}, p-value: {pearson_p:.4f}")
+    print(f"Spearman Correlation: {spearman_corr:.4f}, p-value: {spearman_p:.4f}")
+    
+    # Create a scatterplot for Pearson with regression line
+    sns.lmplot(data=dataframe, x='output_length', y='overall_score', ci=None)
+    plt.title('Output Length vs. Score (Pearson Correlation)')
+    plt.xlabel('Word Count')
+    plt.ylabel('Score')
+    plt.show()
+    if PearsonFilename:
+        plt.savefig(PearsonFilename, dpi=300, bbox_inches='tight', format='png', transparent=True)
+
+    # Create a scatterplot for Spearman with regression line
+    sns.lmplot(data=dataframe, x='output_length', y='overall_score', ci=None)
+    plt.title('Output Length vs. Score (Spearman Correlation)')
+    plt.xlabel('Word Count')
+    plt.ylabel('Score')
+    plt.show()
+    if SpearmanFilename:
+        plt.savefig(SpearmanFilename, dpi=300, bbox_inches='tight', format='png', transparent=True)
 
 def print_worst_results(dataframe, count=3):
     """
@@ -92,55 +122,60 @@ def analyze_scores(dataframe, title, color='blue', filename=None):
     return stats
 
 def main():
-    # Create dataframe of all queries
+    # Create a master dataframe
     input_queries_df = pd.read_json("data/prompt_data/query.jsonl", lines=True)
     output_scores_df = pd.read_json("results/race/midea/raw_results.jsonl", lines=True)
-    # check consistency of prompts matching
-    # assert len(output_scores_df) == len(input_queries_df), "Mismatch in number of queries and results"
-    print(input_queries_df[input_queries_df["id"] == 41]["prompt"])
-    print(output_scores_df[output_scores_df["id"] == 41]["prompt"])
-    # for i in range(len(input_queries_df)):
-    #     assert output_scores_df.iloc[i]["prompt"] == input_queries_df.iloc[i]["prompt"], f"Prompt mismatch at id {i + 1}"
+    output_len = pd.read_json("data/test_data/raw_data/midea.jsonl", lines=True)["article"].apply(len)
+    # check consistency between prompts and results
+    assert len(output_scores_df) == len(input_queries_df), "Mismatch in number of queries and results"
+    for i in range(len(input_queries_df)):
+        assert output_scores_df.iloc[i]["prompt"] == input_queries_df.iloc[i]["prompt"], f"Prompt mismatch at id {i + 1}"
     output_scores_df = output_scores_df.drop(columns=["id", "prompt"])
     result_df = pd.concat([input_queries_df, output_scores_df], axis=1)
+    result_df["output_length"] = output_len
+
  
     # print the columns for DEBUGGING
     # print("Available columns:", result_df.columns.tolist())
    
-    # Create "language" specific subset dataframes
+    # Create "language" and "topic" specific subset dataframes
     english_df = result_df[result_df["language"] == "en"]
     chinese_df = result_df[result_df["language"] == "zh"]
-    # Create "topic" specific dataframes
     science_df = result_df[result_df["topic"] == "Science & Technology"]
     finance_df = result_df[result_df["topic"] == "Finance & Business"]
     software_df = result_df[result_df["topic"] == "Software Development"]
     health_df = result_df[result_df["topic"] == "Health"]
+    
     # Dictionary to navigate dataframes
-    topic_dfs = {
-        "ALL": (result_df, "ALL SCORES", "blue", "all_scores_distribution.png"),
-        "ENG": (english_df, "ENGLISH SCORES", "green", "english_scores_distribution.png"),
-        "CHI": (chinese_df, "CHINESE SCORES", "red", "chinese_scores_distribution.png"),
-        "SCI": (science_df, "SCIENCE SCORES", "purple", "science_scores_distribution.png"),
-        "FIN": (finance_df, "FINANCE SCORES", "orange", "finance_scores_distribution.png"),
-        "SOFT": (software_df, "SOFTWARE SCORES", "cyan", "software_scores_distribution.png"),
-        "HEALTH": (health_df, "HEALTH SCORES", "magenta", "health_scores_distribution.png"),
+    analysis_groups = {
+        "ALL": (result_df, "ALL SCORES", "blue", "data/stats_data/all_scores_distribution.png"),
+        "ENG": (english_df, "ENGLISH SCORES", "green", "data/stats_data/english_scores_distribution.png"),
+        "CHI": (chinese_df, "CHINESE SCORES", "red", "data/stats_data/chinese_scores_distribution.png"),
+        "SCI": (science_df, "SCIENCE SCORES", "purple", "data/stats_data/science_scores_distribution.png"),
+        "FIN": (finance_df, "FINANCE SCORES", "orange", "data/stats_data/finance_scores_distribution.png"),
+        "SOFT": (software_df, "SOFTWARE SCORES", "cyan", "data/stats_data/software_scores_distribution.png"),
+        "HEALTH": (health_df, "HEALTH SCORES", "magenta", "data/stats_data/health_scores_distribution.png"),
     }
     # CHANGE THIS TO CHANGE WHAT IS BEING ANALYZED
-    key = topic_dfs["ALL"]
+    key = analysis_groups["ALL"]
 
-    # for topic in topic_dfs:
-    #     analyze_scores(topic_dfs[topic][0], topic_dfs[topic][1], color=topic_dfs[topic][2], filename=topic_dfs[topic][3])
+    # *********ALL TOPICS**********
+    # for topic in analysis_groups:
+    #     analyze_scores(analysis_groups[topic][0], analysis_groups[topic][1], color=analysis_groups[topic][2], filename=analysis_groups[topic][3])
 
- 
+    # *********ONE TOPIC**********
     # analyze_scores(key[0], key[1], color=key[2], filename=key[3])
+
+    # *********WORST/BEST CASES**********
     # print_best_results(key[0], count=4)   
     # print_worst_results(key[0], count=4)  
 
-
-
-
-    # MISCELLANEOUS PRINTING SPACE
+    # *****MISCELLANEOUS PRINTING SPACE******
     # print(result_df[result_df["id"] == 74])
+
+    # Find length bias
+    find_length_bias(key[0])
+    print("DONE")
 
 
 if __name__ == "__main__":
