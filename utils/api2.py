@@ -1,7 +1,5 @@
 import os
 from typing import Optional, Dict, Any
-from google import genai
-from google.genai import types
 import requests
 import logging
 
@@ -15,15 +13,15 @@ logging.getLogger('google.genai').setLevel(logging.WARNING)
 logging.getLogger('httpx').setLevel(logging.WARNING)
 
 # Read API keys from environment variables
-API_KEY = os.environ.get("GEMINI_API_KEY", "")
+API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 READ_API_KEY = os.environ.get("JINA_API_KEY", "")
-FACT_Model = "gemini-2.5-flash-preview-05-20"
-Model = "gemini-2.5-pro-preview-06-05"
+FACT_Model = "Deepseek-V3"
+Model = "Deepseek-V3"
 
 class AIClient:
     
     def __init__(self, api_key=API_KEY, model=Model):
-        self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
+        self.api_key = api_key or os.environ.get("DEEPSEEK_API_KEY")
         if not self.api_key:
             raise ValueError("Gemini API key not provided! Please set GEMINI_API_KEY environment variable.")
         
