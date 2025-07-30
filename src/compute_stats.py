@@ -157,15 +157,15 @@ def main():
     key = analysis_groups["ALL"]
 
     # *********ALL TOPICS**********
-    # for topic in analysis_groups:
-    #     analyze_scores(analysis_groups[topic][0], analysis_groups[topic][1], color=analysis_groups[topic][2], filename=analysis_groups[topic][3])
+    for topic in analysis_groups:
+        analyze_scores(analysis_groups[topic][0], analysis_groups[topic][1], color=analysis_groups[topic][2], filename=analysis_groups[topic][3])
 
     # *********ONE TOPIC**********
     # analyze_scores(key[0], key[1], color=key[2], filename=key[3])
 
     # *********WORST/BEST CASES**********
     # print_best_results(key[0], count=4)   
-    print_worst_results(key[0], count = 4)  
+    # print_worst_results(key[0], count = 4)  
 
     # *****MISCELLANEOUS PRINTING SPACE******
     # print(result_df[result_df["id"] == 74])
