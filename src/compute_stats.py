@@ -167,7 +167,7 @@ def main():
         "HEALTH": (health_df, "HEALTH SCORES", "magenta", "data/stats_data/health_scores_distribution.png"),
     }
     # CHANGE THIS TO CHANGE WHAT IS BEING ANALYZED
-    key = analysis_groups["ALL"]
+    key = analysis_groups["ENG"]
 
     # *********ALL TOPICS**********
     # for topic in analysis_groups:
@@ -177,8 +177,8 @@ def main():
     # analyze_scores(key[0], key[1], color=key[2], filename=key[3])
 
     # *********WORST/BEST CASES**********
-    # print_best_results(key[0], count=4)   
-    # print_worst_results(key[0], count = 4)  
+    # print_best_results(key[0], count=2)   
+    print_worst_results(key[0], count = 2)  
     
     # *****FIND CORRELATIONS BETWEEN TWO MODELS RESULTS*****
     # find_model_correlation(output_scores_df, output_scores_two_df)
