@@ -162,8 +162,8 @@ def main():
     # analyze_scores(key[0], key[1], color=key[2], filename=key[3])
 
     # *********WORST/BEST CASES**********
-    print_best_results(key[0], count=4)   
-    # print_worst_results(key[0], count = 4)  
+    # print_best_results(key[0], count=4)   
+    # # print_worst_results(key[0], count = 4)  
 
     # *****MISCELLANEOUS PRINTING SPACE******
     # print(result_df[result_df["id"] == 74])
