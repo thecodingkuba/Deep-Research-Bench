@@ -134,7 +134,7 @@ def main():
     # Create a master dataframe
     input_queries_df = pd.read_json("data/prompt_data/query.jsonl", lines=True)
     output_scores_df = pd.read_json("results/race/midea/raw_results.jsonl", lines=True)
-    output_scores_two_df = pd.read_json("results/race/midea/raw_results_two.jsonl", lines = True)
+    output_scores_two_df = pd.read_json("results/race/midea/raw_results_other_model.jsonl", lines = True)
     output_len = pd.read_json("data/test_data/raw_data/midea.jsonl", lines=True)["article"].apply(len)
     # check consistency between prompts and results
     assert len(output_scores_df) == len(input_queries_df), "Mismatch in number of queries and results"
@@ -181,7 +181,7 @@ def main():
     # print_worst_results(key[0], count = 4)  
     
     # *****FIND CORRELATIONS BETWEEN TWO MODELS RESULTS*****
-    find_model_correlation(output_scores_df, output_scores_two_df)
+    # find_model_correlation(output_scores_df, output_scores_two_df)
 
     # *****MISCELLANEOUS PRINTING SPACE******
     # print(result_df[result_df["id"] == 74])
