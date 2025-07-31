@@ -73,7 +73,7 @@ def call_midea_api(query_text, thread_id=None):
                     except json.JSONDecodeError:
                         continue
             
-            # Return the best content we found
+            # Return the best content found
             if final_content:
                 return final_content
             elif content_pieces:

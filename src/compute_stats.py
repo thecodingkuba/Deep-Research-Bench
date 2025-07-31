@@ -33,32 +33,6 @@ def print_best_results(dataframe, count=3):
     
     return best_results
 
-def find_length_bias(dataframe):
-    """
-    Analyze the length bias in the dataframe.
-    """
-    pearson_corr, pearson_p = pearsonr(dataframe["output_length"], dataframe['overall_score'])  
-    spearman_corr, spearman_p = spearmanr(dataframe["output_length"], dataframe['overall_score'])
-
-    print("\nLength Bias Analysis:")
-    print(f"Pearson Correlation: {pearson_corr:.4f}, p-value: {pearson_p:.4f}")
-    print(f"Spearman Correlation: {spearman_corr:.4f}, p-value: {spearman_p:.4f}")
-    
-    # Create a scatterplot for Pearson with regression line
-    sns.lmplot(data=dataframe, x='output_length', y='overall_score', ci=None)
-    plt.title('Output Length vs. Score (Pearson Correlation)')
-    plt.xlabel('Word Count')
-    plt.ylabel('Score')
-    plt.show()
-
-     # Create a scatterplot for Spearman with regression line
-    sns.lmplot(data=dataframe, x='output_length', y='overall_score', ci=None)
-    plt.title('Output Length vs. Score (Spearman Correlation)')
-    plt.xlabel('Word Count')
-    plt.ylabel('Score')
-    plt.show()
-  
-
 def print_worst_results(dataframe, count=3):
     """
     Print the worst results from the dataframe with better formatting.
@@ -83,6 +57,31 @@ def print_worst_results(dataframe, count=3):
     
     return worst_results
 
+def find_length_bias(dataframe):
+    """
+    Analyze the length bias in the dataframe.
+    """
+    pearson_corr, pearson_p = pearsonr(dataframe["output_length"], dataframe['overall_score'])  
+    spearman_corr, spearman_p = spearmanr(dataframe["output_length"], dataframe['overall_score'])
+
+    print("\nLength Bias Analysis:")
+    print(f"Pearson Correlation: {pearson_corr:.4f}, p-value: {pearson_p:.4f}")
+    print(f"Spearman Correlation: {spearman_corr:.4f}, p-value: {spearman_p:.4f}")
+    
+    # Create a scatterplot for Pearson with regression line
+    sns.lmplot(data=dataframe, x='output_length', y='overall_score', ci=None)
+    plt.title('Output Length vs. Score (Pearson Correlation)')
+    plt.xlabel('Word Count')
+    plt.ylabel('Score')
+    plt.show()
+
+     # Create a scatterplot for Spearman with regression line
+    sns.lmplot(data=dataframe, x='output_length', y='overall_score', ci=None)
+    plt.title('Output Length vs. Score (Spearman Correlation)')
+    plt.xlabel('Word Count')
+    plt.ylabel('Score')
+    plt.show()
+
 def analyze_scores(dataframe, title, color='blue', filename=None):
     """    
     Parameters:
@@ -96,7 +95,6 @@ def analyze_scores(dataframe, title, color='blue', filename=None):
     print(f"\n{title} PROMPTS STATISTICS:")
     print(stats)
 
-    # Plot distribution - no need to reimport matplotlib.pyplot
     plt.figure(figsize=(10, 6))
     plt.hist(dataframe['overall_score'], bins=15, alpha=0.7, color=color)
     plt.title(f'Distribution of {title} Scores')
