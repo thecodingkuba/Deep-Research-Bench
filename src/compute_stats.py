@@ -157,8 +157,8 @@ def main():
     key = analysis_groups["ALL"]
 
     # *********ALL TOPICS**********
-    for topic in analysis_groups:
-        analyze_scores(analysis_groups[topic][0], analysis_groups[topic][1], color=analysis_groups[topic][2], filename=analysis_groups[topic][3])
+    # for topic in analysis_groups:
+    #     analyze_scores(analysis_groups[topic][0], analysis_groups[topic][1], color=analysis_groups[topic][2], filename=analysis_groups[topic][3])
 
     # *********ONE TOPIC**********
     # analyze_scores(key[0], key[1], color=key[2], filename=key[3])
@@ -171,7 +171,7 @@ def main():
     # print(result_df[result_df["id"] == 74])
 
     # Find length bias
-    # find_length_bias(key[0])
+    find_length_bias(key[0])
     # print("DONE")
 
 
