@@ -57,6 +57,18 @@ def find_length_bias(dataframe):
     plt.xlabel('Word Count')
     plt.ylabel('Score')
     plt.show()
+
+def find_model_correlation(model_one_df, model_two_df):
+    
+    """
+    Analyze the correlations between the results for two models
+    """
+    pearson_corr, pearson_p = pearsonr(model_one_df["overall_score"], model_two_df['overall_score'])  
+    spearman_corr, spearman_p = spearmanr(model_one_df["overall_score"], model_two_df['overall_score'])
+
+    print("\Model Output Correlations:")
+    print(f"Pearson Correlation: {pearson_corr:.4f}, p-value: {pearson_p:.4f}")
+    print(f"Spearman Correlation: {spearman_corr:.4f}, p-value: {spearman_p:.4f}")
   
 
 def print_worst_results(dataframe, count=3):
@@ -122,6 +134,7 @@ def main():
     # Create a master dataframe
     input_queries_df = pd.read_json("data/prompt_data/query.jsonl", lines=True)
     output_scores_df = pd.read_json("results/race/midea/raw_results.jsonl", lines=True)
+    output_scores_two_df = pd.read_json("results/race/midea/raw_results_two.jsonl", lines = True)
     output_len = pd.read_json("data/test_data/raw_data/midea.jsonl", lines=True)["article"].apply(len)
     # check consistency between prompts and results
     assert len(output_scores_df) == len(input_queries_df), "Mismatch in number of queries and results"
@@ -166,12 +179,16 @@ def main():
     # *********WORST/BEST CASES**********
     # print_best_results(key[0], count=4)   
     # print_worst_results(key[0], count = 4)  
+    
+    # *****FIND CORRELATIONS BETWEEN TWO MODELS RESULTS*****
+    find_model_correlation(output_scores_df, output_scores_two_df)
 
     # *****MISCELLANEOUS PRINTING SPACE******
     # print(result_df[result_df["id"] == 74])
+    
 
     # Find length bias
-    find_length_bias(key[0])
+    # find_length_bias(key[0])
     # print("DONE")
 
 
